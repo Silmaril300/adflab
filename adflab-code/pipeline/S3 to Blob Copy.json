@@ -75,8 +75,82 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "SendSuccessEmail",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "S3 to Azure Blob",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 20,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://pragmaticworks.com",
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"dataFactoryName": "@{pipeline().DataFactory}",
+						"successtype": "Succeeded",
+						"message": "@{activity('S3 to Azure Blob').output.dataWritten}",
+						"pipelineName": "@{pipeline().Pipeline}",
+						"recipient": "@{pipeline().parameters.recipient}"
+					}
+				}
+			},
+			{
+				"name": "SendFailureEmail",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "S3 to Azure Blob",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 20,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://pragmaticworks.com",
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"dataFactoryName": "@{pipeline().DataFactory}",
+						"successtype": "Failed",
+						"message": "@{activity('S3 to Azure Blob').error.message}",
+						"pipelineName": "@{pipeline().Pipeline}",
+						"recipient": "@{pipeline().parameters.recipient}"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"recipient": {
+				"type": "string",
+				"defaultValue": "pieter.gruyters@randomforest.se"
+			}
+		},
 		"annotations": []
 	}
 }
