@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adflab-adf300"
+		},
+		"AzStorage_Staging_connectionString": {
+			"value": ""
+		},
+		"SSISDB Azure Endpoint_connectionString": {
+			"value": ""
+		},
+		"Az_blob_S3_connectionString": {
+			"value": ""
+		},
+		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogServerEndpoint": {
+			"value": "adflabsqlzf6ow.database.windows.net"
+		},
+		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminUserName": {
+			"value": "labadmin"
+		},
+		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword": {
+			"value": ""
+		},
+		"S3_MasterFAAFile_properties_typeProperties_fileName": {
+			"value": "FAAmaster.txt"
+		},
+		"S3_MasterFAAFile_properties_typeProperties_folderPath": {
+			"value": "blobsource/S3/S3"
+		},
+		"Master_FAAFile_properties_typeProperties_fileName": {
+			"value": "FAAmaster.txt"
+		},
+		"Master_FAAFile_properties_typeProperties_folderPath": {
+			"value": "input/FAAmaster"
+		}
+	}
+}
