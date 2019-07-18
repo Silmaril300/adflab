@@ -1,0 +1,11 @@
+{
+	"name": "FAA_Merge",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzStorage_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureBlob"
+	}
+}
