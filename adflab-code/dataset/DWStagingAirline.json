@@ -1,0 +1,25 @@
+{
+	"name": "DWStagingAirline",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDWDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "Code",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Airline_Code",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"tableName": "[Staging].[DimAirline]"
+		}
+	}
+}
