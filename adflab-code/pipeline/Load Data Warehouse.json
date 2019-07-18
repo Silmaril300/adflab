@@ -54,7 +54,14 @@
 							"useTypeDefault": true
 						}
 					},
-					"enableStaging": false,
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzStorage_Staging",
+							"type": "LinkedServiceReference"
+						},
+						"path": "output"
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
