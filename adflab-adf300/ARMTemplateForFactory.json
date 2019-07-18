@@ -11,13 +11,33 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzStorage_Staging'"
 		},
+		"Az_blob_S3_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Az_blob_S3'"
+		},
 		"SSISDB Azure Endpoint_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SSISDB Azure Endpoint'"
 		},
-		"Az_blob_S3_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'Az_blob_S3'"
+		"Master_FAAFile_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "FAAmaster.txt"
+		},
+		"Master_FAAFile_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "input/FAAmaster"
+		},
+		"S3_MasterFAAFile_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "FAAmaster.txt"
+		},
+		"S3_MasterFAAFile_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "blobsource/S3/S3"
+		},
+		"HTTP_Weather_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://weather-b362.restdb.io/rest/random-weather-dec-2016"
 		},
 		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogServerEndpoint": {
 			"type": "string",
@@ -29,22 +49,6 @@
 		},
 		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword": {
 			"type": "secureString"
-		},
-		"S3_MasterFAAFile_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "FAAmaster.txt"
-		},
-		"S3_MasterFAAFile_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": "blobsource/S3/S3"
-		},
-		"Master_FAAFile_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "FAAmaster.txt"
-		},
-		"Master_FAAFile_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": "input/FAAmaster"
 		}
 	},
 	"variables": {
@@ -239,6 +243,27 @@
 								"recipient": "@{pipeline().parameters.recipient}"
 							}
 						}
+					},
+					{
+						"name": "Exec Weather to Blob copy",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "SendSuccessEmail",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Weather to Blob Copy",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"parameters": {
@@ -251,117 +276,289 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/S3_MasterFAAFile')]",
-				"[concat(variables('factoryId'), '/datasets/Master_FAAFile')]"
+				"[concat(variables('factoryId'), '/datasets/Master_FAAFile')]",
+				"[concat(variables('factoryId'), '/pipelines/Weather to Blob Copy')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzStorage_Staging')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/Weather to Blob Copy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzStorage_Staging_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SSISDB Azure Endpoint')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('SSISDB Azure Endpoint_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Module2 Trigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
+				"activities": [
 					{
-						"pipelineReference": {
-							"referenceName": "Module2",
-							"type": "PipelineReference"
+						"name": "Copy_fu0",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
 						},
-						"parameters": {}
+						"userProperties": [
+							{
+								"name": "Destination",
+								"value": "input//201612-WeatherData.txt"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "HttpSource",
+								"httpRequestTimeout": "00:01:40"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSetting",
+									"copyBehavior": "MergeFiles"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSetting",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_fu0",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_fu0",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
-				"type": "ScheduleTrigger",
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_fu0')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_fu0')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_fu0')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzStorage_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2019-07-16T17:02:00Z",
-						"timeZone": "UTC"
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "201612-WeatherData.txt",
+						"container": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "_id",
+						"type": "String"
+					},
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "dateint",
+						"type": "String"
+					},
+					{
+						"name": "airport",
+						"type": "String"
+					},
+					{
+						"name": "temp",
+						"type": "String"
 					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzStorage_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Master_FAAFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzStorage_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "N-Number",
+						"type": "String"
+					},
+					{
+						"name": "Serial Number",
+						"type": "String"
+					},
+					{
+						"name": "MFR MDL Code",
+						"type": "String"
+					},
+					{
+						"name": "Eng MFR Code",
+						"type": "String"
+					},
+					{
+						"name": "Year MFR",
+						"type": "String"
+					},
+					{
+						"name": "Type Registrant",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Street 1",
+						"type": "String"
+					},
+					{
+						"name": "Street2",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "State",
+						"type": "String"
+					},
+					{
+						"name": "ZIP",
+						"type": "String"
+					},
+					{
+						"name": "Region",
+						"type": "String"
+					},
+					{
+						"name": "County ",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Last Activity Date",
+						"type": "String"
+					},
+					{
+						"name": "Cert Issue Date",
+						"type": "String"
+					},
+					{
+						"name": "Certification Requested ",
+						"type": "String"
+					},
+					{
+						"name": "Type Aircraft",
+						"type": "String"
+					},
+					{
+						"name": "Type Engine",
+						"type": "String"
+					},
+					{
+						"name": "Status Code",
+						"type": "String"
+					},
+					{
+						"name": "Mode S Code",
+						"type": "String"
+					},
+					{
+						"name": "Fractional  Ownership",
+						"type": "String"
+					},
+					{
+						"name": "Airworthiness Date",
+						"type": "String"
+					},
+					{
+						"name": "Other Name 1",
+						"type": "String"
+					},
+					{
+						"name": "Other Name 2",
+						"type": "String"
+					},
+					{
+						"name": "Other Name 3",
+						"type": "String"
+					},
+					{
+						"name": "Other Name 4",
+						"type": "String"
+					},
+					{
+						"name": "Other Name 5",
+						"type": "String"
+					},
+					{
+						"name": "Expiration Date",
+						"type": "String"
+					},
+					{
+						"name": "Unique ID",
+						"type": "String"
+					},
+					{
+						"name": "Kit MFR Code",
+						"type": "String"
+					},
+					{
+						"name": "Kit Model",
+						"type": "String"
+					},
+					{
+						"name": "Mose S Code Hex",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"fileName": "[parameters('Master_FAAFile_properties_typeProperties_fileName')]",
+					"folderPath": "[parameters('Master_FAAFile_properties_typeProperties_folderPath')]"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Module2')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzStorage_Staging')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ADFLab-SSIS')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "West Europe",
-						"nodeSize": "Standard_D2_v3",
-						"numberOfNodes": 2,
-						"maxParallelExecutionsPerNode": 1
-					},
-					"ssisProperties": {
-						"catalogInfo": {
-							"catalogServerEndpoint": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogServerEndpoint')]",
-							"catalogAdminUserName": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminUserName')]",
-							"catalogAdminPassword": {
-								"type": "SecureString",
-								"value": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword')]"
-							},
-							"catalogPricingTier": "Basic"
-						},
-						"edition": "Standard",
-						"licenseType": "BasePrice"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SelfHostedIntegrationRuntime')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Az_blob_S3')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('Az_blob_S3_connectionString')]"
-				}
-			},
-			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/S3_MasterFAAFile')]",
@@ -532,170 +729,182 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Master_FAAFile')]",
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_fu0')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzStorage_Staging",
+					"referenceName": "HTTP_Weather",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "AzureBlob",
+				"type": "HttpFile",
 				"structure": [
 					{
-						"name": "N-Number",
+						"name": "_id",
 						"type": "String"
 					},
 					{
-						"name": "Serial Number",
+						"name": "date",
 						"type": "String"
 					},
 					{
-						"name": "MFR MDL Code",
+						"name": "dateint",
+						"type": "Int64"
+					},
+					{
+						"name": "airport",
 						"type": "String"
 					},
 					{
-						"name": "Eng MFR Code",
-						"type": "String"
-					},
-					{
-						"name": "Year MFR",
-						"type": "String"
-					},
-					{
-						"name": "Type Registrant",
-						"type": "String"
-					},
-					{
-						"name": "Name",
-						"type": "String"
-					},
-					{
-						"name": "Street 1",
-						"type": "String"
-					},
-					{
-						"name": "Street2",
-						"type": "String"
-					},
-					{
-						"name": "City",
-						"type": "String"
-					},
-					{
-						"name": "State",
-						"type": "String"
-					},
-					{
-						"name": "ZIP",
-						"type": "String"
-					},
-					{
-						"name": "Region",
-						"type": "String"
-					},
-					{
-						"name": "County ",
-						"type": "String"
-					},
-					{
-						"name": "Country",
-						"type": "String"
-					},
-					{
-						"name": "Last Activity Date",
-						"type": "String"
-					},
-					{
-						"name": "Cert Issue Date",
-						"type": "String"
-					},
-					{
-						"name": "Certification Requested ",
-						"type": "String"
-					},
-					{
-						"name": "Type Aircraft",
-						"type": "String"
-					},
-					{
-						"name": "Type Engine",
-						"type": "String"
-					},
-					{
-						"name": "Status Code",
-						"type": "String"
-					},
-					{
-						"name": "Mode S Code",
-						"type": "String"
-					},
-					{
-						"name": "Fractional  Ownership",
-						"type": "String"
-					},
-					{
-						"name": "Airworthiness Date",
-						"type": "String"
-					},
-					{
-						"name": "Other Name 1",
-						"type": "String"
-					},
-					{
-						"name": "Other Name 2",
-						"type": "String"
-					},
-					{
-						"name": "Other Name 3",
-						"type": "String"
-					},
-					{
-						"name": "Other Name 4",
-						"type": "String"
-					},
-					{
-						"name": "Other Name 5",
-						"type": "String"
-					},
-					{
-						"name": "Expiration Date",
-						"type": "String"
-					},
-					{
-						"name": "Unique ID",
-						"type": "String"
-					},
-					{
-						"name": "Kit MFR Code",
-						"type": "String"
-					},
-					{
-						"name": "Kit Model",
-						"type": "String"
-					},
-					{
-						"name": "Mose S Code Hex",
-						"type": "String"
+						"name": "temp",
+						"type": "Int64"
 					}
 				],
 				"typeProperties": {
 					"format": {
-						"type": "TextFormat",
-						"columnDelimiter": ",",
-						"rowDelimiter": "",
-						"treatEmptyAsNull": true,
-						"skipLineCount": 0,
-						"firstRowAsHeader": true
+						"type": "JsonFormat",
+						"filePattern": "arrayOfObjects",
+						"jsonPathDefinition": {
+							"_id": "$.['_id']",
+							"date": "$.['date']",
+							"dateint": "$.['dateint']",
+							"airport": "$.['airport']",
+							"temp": "$.['temp']"
+						}
 					},
-					"fileName": "[parameters('Master_FAAFile_properties_typeProperties_fileName')]",
-					"folderPath": "[parameters('Master_FAAFile_properties_typeProperties_folderPath')]"
+					"relativeUrl": "",
+					"requestMethod": "GET",
+					"additionalHeaders": "x-apikey: 5a31643dcb25c1076c7cd9ab\nContent-Type: application/json"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzStorage_Staging')]"
+				"[concat(variables('factoryId'), '/linkedServices/HTTP_Weather')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzStorage_Staging')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzStorage_Staging_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Az_blob_S3')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('Az_blob_S3_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/HTTP_Weather')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('HTTP_Weather_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SSISDB Azure Endpoint')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SSISDB Azure Endpoint_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Module2 Trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Module2",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2019-07-16T17:02:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Module2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ADFLab-SSIS')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "West Europe",
+						"nodeSize": "Standard_D2_v3",
+						"numberOfNodes": 2,
+						"maxParallelExecutionsPerNode": 1
+					},
+					"ssisProperties": {
+						"catalogInfo": {
+							"catalogServerEndpoint": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogServerEndpoint')]",
+							"catalogAdminUserName": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminUserName')]",
+							"catalogAdminPassword": {
+								"type": "SecureString",
+								"value": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword')]"
+							},
+							"catalogPricingTier": "Basic"
+						},
+						"edition": "Standard",
+						"licenseType": "BasePrice"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SelfHostedIntegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
 		}
 	]
 }

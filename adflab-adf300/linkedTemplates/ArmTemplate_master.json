@@ -11,13 +11,33 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzStorage_Staging'"
 		},
+		"Az_blob_S3_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Az_blob_S3'"
+		},
 		"SSISDB Azure Endpoint_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SSISDB Azure Endpoint'"
 		},
-		"Az_blob_S3_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'Az_blob_S3'"
+		"Master_FAAFile_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "FAAmaster.txt"
+		},
+		"Master_FAAFile_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "input/FAAmaster"
+		},
+		"S3_MasterFAAFile_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "FAAmaster.txt"
+		},
+		"S3_MasterFAAFile_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "blobsource/S3/S3"
+		},
+		"HTTP_Weather_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://weather-b362.restdb.io/rest/random-weather-dec-2016"
 		},
 		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogServerEndpoint": {
 			"type": "string",
@@ -29,22 +49,6 @@
 		},
 		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword": {
 			"type": "secureString"
-		},
-		"S3_MasterFAAFile_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "FAAmaster.txt"
-		},
-		"S3_MasterFAAFile_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": "blobsource/S3/S3"
-		},
-		"Master_FAAFile_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "FAAmaster.txt"
-		},
-		"Master_FAAFile_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": "input/FAAmaster"
 		},
 		"containerUri": {
 			"type": "string",
@@ -76,11 +80,14 @@
 					"AzStorage_Staging_connectionString": {
 						"value": "[parameters('AzStorage_Staging_connectionString')]"
 					},
+					"Az_blob_S3_connectionString": {
+						"value": "[parameters('Az_blob_S3_connectionString')]"
+					},
 					"SSISDB Azure Endpoint_connectionString": {
 						"value": "[parameters('SSISDB Azure Endpoint_connectionString')]"
 					},
-					"Az_blob_S3_connectionString": {
-						"value": "[parameters('Az_blob_S3_connectionString')]"
+					"HTTP_Weather_properties_typeProperties_url": {
+						"value": "[parameters('HTTP_Weather_properties_typeProperties_url')]"
 					},
 					"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogServerEndpoint": {
 						"value": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogServerEndpoint')]"
@@ -91,17 +98,17 @@
 					"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword": {
 						"value": "[parameters('ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword')]"
 					},
-					"S3_MasterFAAFile_properties_typeProperties_fileName": {
-						"value": "[parameters('S3_MasterFAAFile_properties_typeProperties_fileName')]"
-					},
-					"S3_MasterFAAFile_properties_typeProperties_folderPath": {
-						"value": "[parameters('S3_MasterFAAFile_properties_typeProperties_folderPath')]"
-					},
 					"Master_FAAFile_properties_typeProperties_fileName": {
 						"value": "[parameters('Master_FAAFile_properties_typeProperties_fileName')]"
 					},
 					"Master_FAAFile_properties_typeProperties_folderPath": {
 						"value": "[parameters('Master_FAAFile_properties_typeProperties_folderPath')]"
+					},
+					"S3_MasterFAAFile_properties_typeProperties_fileName": {
+						"value": "[parameters('S3_MasterFAAFile_properties_typeProperties_fileName')]"
+					},
+					"S3_MasterFAAFile_properties_typeProperties_folderPath": {
+						"value": "[parameters('S3_MasterFAAFile_properties_typeProperties_folderPath')]"
 					}
 				}
 			},
