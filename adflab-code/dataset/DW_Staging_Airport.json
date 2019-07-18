@@ -15,15 +15,10 @@
 			{
 				"name": "City_Airport",
 				"type": "varchar"
-			},
-			{
-				"name": "Key",
-				"type": "int",
-				"precision": 10
 			}
 		],
 		"typeProperties": {
-			"tableName": "[ADF].[DimAirport]"
+			"tableName": "[Staging].[DimAirport]"
 		}
 	}
 }
