@@ -16,6 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"scriptPath": "input/FAAMerge.hql",
+					"getDebugInfo": "Always",
 					"scriptLinkedService": {
 						"referenceName": "AzStorage_Staging",
 						"type": "LinkedServiceReference"
