@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureDWDB'"
 		},
+		"AzureODSDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureODSDB'"
+		},
 		"HDI_ADFLab_clusterPassword": {
 			"type": "secureString",
 			"metadata": "Secure string for 'clusterPassword' of 'HDI_ADFLab'"
@@ -122,6 +126,9 @@
 					"AzureDWDB_connectionString": {
 						"value": "[parameters('AzureDWDB_connectionString')]"
 					},
+					"AzureODSDB_connectionString": {
+						"value": "[parameters('AzureODSDB_connectionString')]"
+					},
 					"SSISDB Azure Endpoint_connectionString": {
 						"value": "[parameters('SSISDB Azure Endpoint_connectionString')]"
 					},
@@ -176,6 +183,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ArmTemplate_0')]"
+			]
 		}
 	]
 }

@@ -1,0 +1,219 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "adflab-adf300"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/S3 to Blob Copy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "S3 to Azure Blob",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BlobSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "BlobSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"columnMappings": {
+									"N-Number": "N-Number",
+									"Serial Number": "Serial Number",
+									"MFR MDL Code": "MFR MDL Code",
+									"Eng MFR Code": "Eng MFR Code",
+									"Year MFR": "Year MFR",
+									"Type Registrant": "Type Registrant",
+									"Name": "Name",
+									"Street 1": "Street 1",
+									"Street2": "Street2",
+									"City": "City",
+									"State": "State",
+									"ZIP": "ZIP",
+									"Region": "Region",
+									"County ": "County ",
+									"Country": "Country",
+									"Last Activity Date": "Last Activity Date",
+									"Cert Issue Date": "Cert Issue Date",
+									"Certification Requested ": "Certification Requested ",
+									"Type Aircraft": "Type Aircraft",
+									"Type Engine": "Type Engine",
+									"Status Code": "Status Code",
+									"Mode S Code": "Mode S Code",
+									"Fractional  Ownership": "Fractional  Ownership",
+									"Airworthiness Date": "Airworthiness Date",
+									"Other Name 1": "Other Name 1",
+									"Other Name 2": "Other Name 2",
+									"Other Name 3": "Other Name 3",
+									"Other Name 4": "Other Name 4",
+									"Other Name 5": "Other Name 5",
+									"Expiration Date": "Expiration Date",
+									"Unique ID": "Unique ID",
+									"Kit MFR Code": "Kit MFR Code",
+									"Kit Model": "Kit Model",
+									"Mose S Code Hex": "Mose S Code Hex"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "S3_MasterFAAFile",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Master_FAAFile",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "SendSuccessEmail",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "S3 to Azure Blob",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://pragmaticworks.com",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"dataFactoryName": "@{pipeline().DataFactory}",
+								"successtype": "Succeeded",
+								"message": "@{activity('S3 to Azure Blob').output.dataWritten}",
+								"pipelineName": "@{pipeline().Pipeline}",
+								"recipient": "@{pipeline().parameters.recipient}"
+							}
+						}
+					},
+					{
+						"name": "SendFailureEmail",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "S3 to Azure Blob",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://pragmaticworks.com",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"dataFactoryName": "@{pipeline().DataFactory}",
+								"successtype": "Failed",
+								"message": "@{activity('S3 to Azure Blob').error.message}",
+								"pipelineName": "@{pipeline().Pipeline}",
+								"recipient": "@{pipeline().parameters.recipient}"
+							}
+						}
+					},
+					{
+						"name": "Exec Weather to Blob copy",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "SendSuccessEmail",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Weather to Blob Copy",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Exec Merge FAA Files",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Exec Weather to Blob copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Merge FAA Files",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"parameters": {
+					"recipient": {
+						"type": "string",
+						"defaultValue": "pieter.gruyters@randomforest.se"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureDWDB'"
 		},
+		"AzureODSDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureODSDB'"
+		},
 		"HDI_ADFLab_clusterPassword": {
 			"type": "secureString",
 			"metadata": "Secure string for 'clusterPassword' of 'HDI_ADFLab'"
@@ -116,12 +120,96 @@
 							"referenceName": "AzureDWDB",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "ODS Airline to DW",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource"
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"allowPolyBase": true,
+								"polyBaseSettings": {
+									"rejectValue": 0,
+									"rejectType": "value",
+									"useTypeDefault": true
+								}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "AzStorage_Staging",
+									"type": "LinkedServiceReference"
+								},
+								"path": "output"
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Code",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "Code",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "Airline_Code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Airline_Code",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ODSAirline",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DWStagingAirline",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDWDB')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureDWDB')]",
+				"[concat(variables('factoryId'), '/datasets/ODSAirline')]",
+				"[concat(variables('factoryId'), '/datasets/DWStagingAirline')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzStorage_Staging')]"
 			]
 		},
 		{
@@ -475,6 +563,36 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DWStagingAirline')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDWDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "Code",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Airline_Code",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[Staging].[DimAirline]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDWDB')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DestinationDataset_fu0')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -687,6 +805,36 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzStorage_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ODSAirline')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureODSDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Code",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Airline_Code",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[dbo].[Airline]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureODSDB')]"
 			]
 		},
 		{
@@ -946,6 +1094,19 @@
 				"type": "AzureSqlDW",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureDWDB_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureODSDB')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureODSDB_connectionString')]"
 				}
 			},
 			"dependsOn": []
