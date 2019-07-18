@@ -15,6 +15,18 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Az_blob_S3'"
 		},
+		"HDI_ADFLab_clusterPassword": {
+			"type": "secureString",
+			"metadata": "Secure string for 'clusterPassword' of 'HDI_ADFLab'"
+		},
+		"HDI_ADFLab_clusterSshPassword": {
+			"type": "secureString",
+			"metadata": "Secure string for 'clusterSshPassword' of 'HDI_ADFLab'"
+		},
+		"HDI_ADFLab_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'HDI_ADFLab'"
+		},
 		"SSISDB Azure Endpoint_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SSISDB Azure Endpoint'"
@@ -34,6 +46,26 @@
 		"S3_MasterFAAFile_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "blobsource/S3/S3"
+		},
+		"HDI_ADFLab_properties_typeProperties_hostSubscriptionId": {
+			"type": "string",
+			"defaultValue": "c14554fe-2205-4aa2-9458-1fe4b13e0878"
+		},
+		"HDI_ADFLab_properties_typeProperties_clusterResourceGroup": {
+			"type": "string",
+			"defaultValue": "adflab-test"
+		},
+		"HDI_ADFLab_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "f3bdebfd-68db-4424-bab3-a8b8cd386be2"
+		},
+		"HDI_ADFLab_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "580a5de5-d69e-4245-885d-6339e2e76bc3"
+		},
+		"HDI_ADFLab_properties_typeProperties_clusterSshUserName": {
+			"type": "string",
+			"defaultValue": "adflab_HiveCluster"
 		},
 		"HTTP_Weather_properties_typeProperties_url": {
 			"type": "string",
@@ -86,6 +118,15 @@
 					"SSISDB Azure Endpoint_connectionString": {
 						"value": "[parameters('SSISDB Azure Endpoint_connectionString')]"
 					},
+					"HDI_ADFLab_clusterPassword": {
+						"value": "[parameters('HDI_ADFLab_clusterPassword')]"
+					},
+					"HDI_ADFLab_clusterSshPassword": {
+						"value": "[parameters('HDI_ADFLab_clusterSshPassword')]"
+					},
+					"HDI_ADFLab_servicePrincipalKey": {
+						"value": "[parameters('HDI_ADFLab_servicePrincipalKey')]"
+					},
 					"HTTP_Weather_properties_typeProperties_url": {
 						"value": "[parameters('HTTP_Weather_properties_typeProperties_url')]"
 					},
@@ -109,6 +150,21 @@
 					},
 					"S3_MasterFAAFile_properties_typeProperties_folderPath": {
 						"value": "[parameters('S3_MasterFAAFile_properties_typeProperties_folderPath')]"
+					},
+					"HDI_ADFLab_properties_typeProperties_hostSubscriptionId": {
+						"value": "[parameters('HDI_ADFLab_properties_typeProperties_hostSubscriptionId')]"
+					},
+					"HDI_ADFLab_properties_typeProperties_clusterResourceGroup": {
+						"value": "[parameters('HDI_ADFLab_properties_typeProperties_clusterResourceGroup')]"
+					},
+					"HDI_ADFLab_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('HDI_ADFLab_properties_typeProperties_servicePrincipalId')]"
+					},
+					"HDI_ADFLab_properties_typeProperties_tenant": {
+						"value": "[parameters('HDI_ADFLab_properties_typeProperties_tenant')]"
+					},
+					"HDI_ADFLab_properties_typeProperties_clusterSshUserName": {
+						"value": "[parameters('HDI_ADFLab_properties_typeProperties_clusterSshUserName')]"
 					}
 				}
 			},
