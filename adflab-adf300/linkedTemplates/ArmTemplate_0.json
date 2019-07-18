@@ -182,6 +182,15 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Module2')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1006,6 +1015,27 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "Exec Merge FAA Files",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Exec Weather to Blob copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Merge FAA Files",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"parameters": {
@@ -1019,7 +1049,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/S3_MasterFAAFile')]",
 				"[concat(variables('factoryId'), '/datasets/Master_FAAFile')]",
-				"[concat(variables('factoryId'), '/pipelines/Weather to Blob Copy')]"
+				"[concat(variables('factoryId'), '/pipelines/Weather to Blob Copy')]",
+				"[concat(variables('factoryId'), '/pipelines/Merge FAA Files')]"
 			]
 		}
 	]
