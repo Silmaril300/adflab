@@ -1,0 +1,24 @@
+{
+	"name": "ODSAirport",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureODSDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Code",
+				"type": "varchar"
+			},
+			{
+				"name": "City_Airport",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"tableName": "[dbo].[Airport]"
+		}
+	}
+}
