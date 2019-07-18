@@ -1,0 +1,29 @@
+{
+	"name": "DW_Staging_Airport",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDWDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "Code",
+				"type": "varchar"
+			},
+			{
+				"name": "City_Airport",
+				"type": "varchar"
+			},
+			{
+				"name": "Key",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"tableName": "[ADF].[DimAirport]"
+		}
+	}
+}
