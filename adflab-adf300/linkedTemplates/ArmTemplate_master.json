@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Az_blob_S3'"
 		},
+		"AzureDWDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureDWDB'"
+		},
 		"HDI_ADFLab_clusterPassword": {
 			"type": "secureString",
 			"metadata": "Secure string for 'clusterPassword' of 'HDI_ADFLab'"
@@ -114,6 +118,9 @@
 					},
 					"Az_blob_S3_connectionString": {
 						"value": "[parameters('Az_blob_S3_connectionString')]"
+					},
+					"AzureDWDB_connectionString": {
+						"value": "[parameters('AzureDWDB_connectionString')]"
 					},
 					"SSISDB Azure Endpoint_connectionString": {
 						"value": "[parameters('SSISDB Azure Endpoint_connectionString')]"

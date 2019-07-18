@@ -11,6 +11,9 @@
 		"Az_blob_S3_connectionString": {
 			"value": ""
 		},
+		"AzureDWDB_connectionString": {
+			"value": ""
+		},
 		"HDI_ADFLab_clusterPassword": {
 			"value": ""
 		},
