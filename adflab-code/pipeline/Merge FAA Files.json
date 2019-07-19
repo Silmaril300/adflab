@@ -23,7 +23,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "HDI_ADFLab",
+					"referenceName": "HDI_Hive",
 					"type": "LinkedServiceReference"
 				}
 			}
