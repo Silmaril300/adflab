@@ -1,0 +1,23 @@
+{
+	"name": "FAAMerge",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzStorage_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureBlob",
+		"typeProperties": {
+			"format": {
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "",
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": true
+			},
+			"fileName": "000000_0",
+			"folderPath": "output/FAAMerge"
+		}
+	}
+}
