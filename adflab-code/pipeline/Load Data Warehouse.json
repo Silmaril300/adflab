@@ -608,6 +608,39 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Blob FAA to DW",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DW Truncate Staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BlobSource",
+						"recursive": true
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "FAAMerge",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
