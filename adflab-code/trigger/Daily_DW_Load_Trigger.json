@@ -1,0 +1,32 @@
+{
+	"name": "Daily_DW_Load_Trigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Master - Begin DW Load",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"recipient": "pieter.gruyters@randomforest.se"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2019-07-19T00:00:00.000Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"hours": [
+						12
+					]
+				}
+			}
+		}
+	}
+}
