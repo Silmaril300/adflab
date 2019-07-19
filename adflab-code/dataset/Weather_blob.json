@@ -18,7 +18,7 @@
 			},
 			{
 				"name": "dateint",
-				"type": "String"
+				"type": "Int64"
 			},
 			{
 				"name": "airport",
@@ -26,7 +26,7 @@
 			},
 			{
 				"name": "temp",
-				"type": "String"
+				"type": "Int16"
 			}
 		],
 		"typeProperties": {
