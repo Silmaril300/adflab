@@ -612,14 +612,7 @@
 			{
 				"name": "Blob FAA to DW",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "DW Truncate Staging",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -769,6 +762,51 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "DW Load Dimensions",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ODS Airline to DW",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ODS Airport to DW",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ODS Flight to DW",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Blob Weather to DW",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_LoadDimensions]"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDWDB",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"annotations": []
