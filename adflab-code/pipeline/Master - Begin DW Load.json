@@ -1,5 +1,5 @@
 {
-	"name": "S3 to Blob Copy",
+	"name": "Master - Begin DW Load",
 	"properties": {
 		"activities": [
 			{
