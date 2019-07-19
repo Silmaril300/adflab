@@ -26,6 +26,15 @@
 		"HDI_ADFLab_servicePrincipalKey": {
 			"value": ""
 		},
+		"HDI_Hive_clusterPassword": {
+			"value": ""
+		},
+		"HDI_Hive_clusterSshPassword": {
+			"value": ""
+		},
+		"HDI_Hive_servicePrincipalKey": {
+			"value": ""
+		},
 		"SSISDB Azure Endpoint_connectionString": {
 			"value": ""
 		},
@@ -55,6 +64,21 @@
 		},
 		"HDI_ADFLab_properties_typeProperties_clusterSshUserName": {
 			"value": "adflab_HiveCluster"
+		},
+		"HDI_Hive_properties_typeProperties_hostSubscriptionId": {
+			"value": "c14554fe-2205-4aa2-9458-1fe4b13e0878"
+		},
+		"HDI_Hive_properties_typeProperties_clusterResourceGroup": {
+			"value": "adflab-test"
+		},
+		"HDI_Hive_properties_typeProperties_servicePrincipalId": {
+			"value": "f3bdebfd-68db-4424-bab3-a8b8cd386be2"
+		},
+		"HDI_Hive_properties_typeProperties_tenant": {
+			"value": "580a5de5-d69e-4245-885d-6339e2e76bc3"
+		},
+		"HDI_Hive_properties_typeProperties_clusterSshUserName": {
+			"value": "adfLab_HiveCluster"
 		},
 		"HTTP_Weather_properties_typeProperties_url": {
 			"value": "https://weather-b362.restdb.io/rest/random-weather-dec-2016"

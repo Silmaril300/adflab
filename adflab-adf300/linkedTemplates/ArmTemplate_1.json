@@ -19,6 +19,18 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'servicePrincipalKey' of 'HDI_ADFLab'"
 		},
+		"HDI_Hive_clusterPassword": {
+			"type": "secureString",
+			"metadata": "Secure string for 'clusterPassword' of 'HDI_Hive'"
+		},
+		"HDI_Hive_clusterSshPassword": {
+			"type": "secureString",
+			"metadata": "Secure string for 'clusterSshPassword' of 'HDI_Hive'"
+		},
+		"HDI_Hive_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'HDI_Hive'"
+		},
 		"HDI_ADFLab_properties_typeProperties_hostSubscriptionId": {
 			"type": "string",
 			"defaultValue": "c14554fe-2205-4aa2-9458-1fe4b13e0878"
@@ -38,6 +50,26 @@
 		"HDI_ADFLab_properties_typeProperties_clusterSshUserName": {
 			"type": "string",
 			"defaultValue": "adflab_HiveCluster"
+		},
+		"HDI_Hive_properties_typeProperties_hostSubscriptionId": {
+			"type": "string",
+			"defaultValue": "c14554fe-2205-4aa2-9458-1fe4b13e0878"
+		},
+		"HDI_Hive_properties_typeProperties_clusterResourceGroup": {
+			"type": "string",
+			"defaultValue": "adflab-test"
+		},
+		"HDI_Hive_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "f3bdebfd-68db-4424-bab3-a8b8cd386be2"
+		},
+		"HDI_Hive_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "580a5de5-d69e-4245-885d-6339e2e76bc3"
+		},
+		"HDI_Hive_properties_typeProperties_clusterSshUserName": {
+			"type": "string",
+			"defaultValue": "adfLab_HiveCluster"
 		}
 	},
 	"variables": {
@@ -74,6 +106,50 @@
 					"servicePrincipalKey": {
 						"type": "SecureString",
 						"value": "[parameters('HDI_ADFLab_servicePrincipalKey')]"
+					},
+					"linkedServiceName": {
+						"referenceName": "AzStorage_Staging",
+						"type": "LinkedServiceReference"
+					},
+					"headNodeSize": "",
+					"dataNodeSize": "",
+					"zookeeperNodeSize": "",
+					"subnetName": "",
+					"virtualNetworkId": ""
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/HDI_Hive')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HDInsightOnDemand",
+				"typeProperties": {
+					"clusterType": "hadoop",
+					"clusterSize": 4,
+					"timeToLive": "00:05:00",
+					"version": "3.6",
+					"hostSubscriptionId": "[parameters('HDI_Hive_properties_typeProperties_hostSubscriptionId')]",
+					"clusterResourceGroup": "[parameters('HDI_Hive_properties_typeProperties_clusterResourceGroup')]",
+					"servicePrincipalId": "[parameters('HDI_Hive_properties_typeProperties_servicePrincipalId')]",
+					"osType": "Linux",
+					"tenant": "[parameters('HDI_Hive_properties_typeProperties_tenant')]",
+					"clusterNamePrefix": "",
+					"clusterPassword": {
+						"type": "SecureString",
+						"value": "[parameters('HDI_Hive_clusterPassword')]"
+					},
+					"clusterSshUserName": "[parameters('HDI_Hive_properties_typeProperties_clusterSshUserName')]",
+					"clusterSshPassword": {
+						"type": "SecureString",
+						"value": "[parameters('HDI_Hive_clusterSshPassword')]"
+					},
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('HDI_Hive_servicePrincipalKey')]"
 					},
 					"linkedServiceName": {
 						"referenceName": "AzStorage_Staging",
@@ -739,7 +815,7 @@
 							}
 						},
 						"linkedServiceName": {
-							"referenceName": "HDI_ADFLab",
+							"referenceName": "HDI_Hive",
 							"type": "LinkedServiceReference"
 						}
 					}
@@ -747,7 +823,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/HDI_ADFLab')]"
+				"[concat(variables('factoryId'), '/linkedServices/HDI_Hive')]"
 			]
 		},
 		{
