@@ -91,6 +91,21 @@
 		},
 		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword": {
 			"value": ""
+		},
+		"FAAMerge_properties_typeProperties_fileName": {
+			"value": "000000_0"
+		},
+		"FAAMerge_properties_typeProperties_folderPath": {
+			"value": "output/FAAMerge"
+		},
+		"Weather_blob_properties_typeProperties_fileName": {
+			"value": "201612-WeatherData.txt"
+		},
+		"Weather_blob_properties_typeProperties_folderPath": {
+			"value": "input"
+		},
+		"Daily_DW_Load_Trigger_properties_Master - Begin DW Load_parameters_recipient": {
+			"value": "pieter.gruyters@randomforest.se"
 		}
 	}
 }

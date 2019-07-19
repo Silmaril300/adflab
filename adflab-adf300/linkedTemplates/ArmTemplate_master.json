@@ -122,6 +122,26 @@
 		"ADFLab-SSIS_properties_typeProperties_ssisProperties_catalogInfo_catalogAdminPassword": {
 			"type": "secureString"
 		},
+		"FAAMerge_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "000000_0"
+		},
+		"FAAMerge_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "output/FAAMerge"
+		},
+		"Weather_blob_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "201612-WeatherData.txt"
+		},
+		"Weather_blob_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "input"
+		},
+		"Daily_DW_Load_Trigger_properties_Master - Begin DW Load_parameters_recipient": {
+			"type": "string",
+			"defaultValue": "pieter.gruyters@randomforest.se"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -253,6 +273,21 @@
 					},
 					"HDI_Hive_properties_typeProperties_clusterSshUserName": {
 						"value": "[parameters('HDI_Hive_properties_typeProperties_clusterSshUserName')]"
+					},
+					"FAAMerge_properties_typeProperties_fileName": {
+						"value": "[parameters('FAAMerge_properties_typeProperties_fileName')]"
+					},
+					"FAAMerge_properties_typeProperties_folderPath": {
+						"value": "[parameters('FAAMerge_properties_typeProperties_folderPath')]"
+					},
+					"Weather_blob_properties_typeProperties_fileName": {
+						"value": "[parameters('Weather_blob_properties_typeProperties_fileName')]"
+					},
+					"Weather_blob_properties_typeProperties_folderPath": {
+						"value": "[parameters('Weather_blob_properties_typeProperties_folderPath')]"
+					},
+					"Daily_DW_Load_Trigger_properties_Master - Begin DW Load_parameters_recipient": {
+						"value": "[parameters('Daily_DW_Load_Trigger_properties_Master - Begin DW Load_parameters_recipient')]"
 					}
 				}
 			},
