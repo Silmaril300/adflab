@@ -633,11 +633,33 @@
 						"type": "BlobSource",
 						"recursive": true
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "SqlDWSink",
+						"allowPolyBase": true,
+						"polyBaseSettings": {
+							"rejectValue": 0,
+							"rejectType": "value",
+							"useTypeDefault": true
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzStorage_Staging",
+							"type": "LinkedServiceReference"
+						},
+						"path": "output"
+					}
 				},
 				"inputs": [
 					{
 						"referenceName": "FAAMerge",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DW_Staging_Aircraft",
 						"type": "DatasetReference"
 					}
 				]
